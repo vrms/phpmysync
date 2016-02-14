@@ -17,9 +17,7 @@ $dir=getcwd();
 $dirdata=$dir."/data";
 $dbjoorgsqlite=$dirdata."/joorgsqlite.db";
 if (!file_exists($dirdata)) {
-  echo "<div class='alert alert-warning'>";
-  echo "Keine Datenbank installiert.<br>";
-  echo "</div>";
+echo "Keine Datenbank installiert.<br>";
 } else {
   $db = dbopen('','data/mysqlitesync.db');
   $parentid=$_GET['id'];
