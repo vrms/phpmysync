@@ -1,3 +1,5 @@
+.gitignore
+.gitignore~
 git.sh
 git.sh~
 config.php

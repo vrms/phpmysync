@@ -1,0 +1,10 @@
+<?php
+
+function nosyncfunc($dbindex) {
+echo "<div class='alert alert-info'>";
+echo "nosync<br>";
+echo $dbindex."=dbindex<br>";
+echo "</div>";
+}
+
+?>
