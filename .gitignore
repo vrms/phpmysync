@@ -1,4 +1,5 @@
 data/
+.gitignore~
 git.sh
 git.sh~
 config.php
