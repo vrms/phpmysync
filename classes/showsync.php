@@ -13,9 +13,9 @@ if ($showsync==1) {
   $typ=$_POST['typ'];
   //echo $typ."=typ<br>"; 
   if ($typ=="local") { 	
-    showsynclocal($menu,$database);
+    showsynclocal($menu,$database,$pfad);
   } else {
-    showsyncremote($menu,$database);
+    showsyncremote($menu,$database,$pfad);
   }    
 } else {
   showauswahl($menu,$database);

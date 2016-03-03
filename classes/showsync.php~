@@ -11,8 +11,12 @@ echo "<a href='showtab.php?menu=".$menu."'  class='btn btn-primary btn-sm active
 $showsync = $_GET['showsync'];
 if ($showsync==1) {
   $typ=$_POST['typ'];
-  echo $typ."=typ<br>";  	
-  showsync($menu,$database);
+  //echo $typ."=typ<br>"; 
+  if ($typ=="local") { 	
+    showsynclocal($menu,$database);
+  } else {
+    showsyncremote($menu,$database,$pfad);
+  }    
 } else {
   showauswahl($menu,$database);
 }

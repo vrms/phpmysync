@@ -69,6 +69,7 @@ function syncauswahl($database,$menu) {
 function synclocal($database,$menu,$urladr,$pfad,$nuranzeigen) {
   $db = new SQLite3('../data/'.$database);
   $anz=$_POST['anz'];
+  
   for( $i=1; $i <= $anz; $i++ ) {
     if ($_POST['chk'.$i]=='true') {
       //echo $_POST['chk'.$i]."=chk,".$_POST['ind'.$i]."<br>";
@@ -117,15 +118,26 @@ function synclocal($database,$menu,$urladr,$pfad,$nuranzeigen) {
 	    }
         echo $website."<br>";
 //        echo "</div>";
+
+      $timestamp="2015-01-01 06:00:00";
+
+  echo "<table>";
+  echo "<tr><td>Pfad</td><td> : ".$pfad."</td></tr>";
+  echo "<tr><td>Datenbank</td><td> : ".$dblocal."</td></tr>";
+  echo "<tr><td>Table</td><td> : ".$dbtable."</td></tr>";
+  echo "<tr><td>dbsyncnr</td><td> : ".$dbsyncnr."</td></tr>";
+  echo "<tr><td>timestamp</td><td> : ".$timestamp."</td></tr>";
+  echo "</table>";
+
  
-        $dblocal=dbopentyp($dbtyp,$dblocal,$dbuser,$dbpassword);
+        $dbopen=dbopentyp($dbtyp,$dblocal,$dbuser,$dbpassword);
 //      $dblocal = new SQLite3($dblocal);
         $col = "";
         $lincnt = 1;
         $count = 0;
 		if ($dbtyp=='MYSQL') {
   		  $query="SHOW COLUMNS FROM ".$dbtable;
-          $results = dbquerytyp($dbtyp,$dblocal,$query);
+          $results = dbquerytyp($dbtyp,$dbopen,$query);
           $arrcol = array();
           while ($row = dbfetchtyp($dbtyp,$results)) {
             $colstr=$row['Field'];
@@ -139,7 +151,7 @@ function synclocal($database,$menu,$urladr,$pfad,$nuranzeigen) {
 		  }
 		} else {
 		  $query="SELECT name,sql FROM sqlite_master WHERE type='table' AND name='".$dbtable."'";
-          $results = dbquerytyp($dbtyp,$dblocal,$query);
+          $results = dbquerytyp($dbtyp,$dbopen,$query);
           $arrcol = array();
           if ($row = dbfetchtyp($dbtyp,$results)) {
             $colstr=$row['sql'];
@@ -163,10 +175,10 @@ function synclocal($database,$menu,$urladr,$pfad,$nuranzeigen) {
           }	
 		}
 
-        $qryval = "SELECT ".$col." FROM ".$dbtable." WHERE fldtimestamp>'".$timestamp."' AND flddbsyncnr=".$dbsyncnr;
+        $qryval = "SELECT ".$col." FROM ".$dbtable." WHERE fldtimestamp>'".$timestamp."' AND flddbsyncnr=".$dbsyncnr." AND flddbsyncstatus='SYNC'";
 	     echo $qryval."<br>";
 //        $resval = $dblocal->query($qryval);
-        $resval = dbquerytyp($dbtyp,$dblocal,$qryval);
+        $resval = dbquerytyp($dbtyp,$dbopen,$qryval);
         $datcnt=0;
         echo "</div>";
 		
@@ -199,6 +211,8 @@ function synclocal($database,$menu,$urladr,$pfad,$nuranzeigen) {
 
 		
         echo "<input type='hidden' name='datcnt' value='".$datcnt."'/>";
+        echo "<input type='hidden' name='pfad' value='".$pfad."' />";
+        echo "<input type='hidden' name='database' value='".$dblocal."' />";
         echo "<dd><input type='submit' value='Daten senden' /></dd>";
         echo "</form>";
 	  

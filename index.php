@@ -38,6 +38,8 @@ if (!file_exists($dirdata)) {
   if (!file_exists($dirdb)) {
     include("classes/install.php");
   } else {
+    include("classes/checkupgrade.php");
+    check_version();
     $db = dbopen('','data/'.$database);
     $parentid=$_GET['id'];
     if ($parentid=="") {

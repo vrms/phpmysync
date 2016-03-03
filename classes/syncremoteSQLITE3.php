@@ -1,37 +1,106 @@
 <?php
 include("bootstrapfunc.php");
+include("dbtool.php");
 include("../config.php");
 $menu=$_GET['menu'];
-$pfad=$_GET['pfad'];
+//echo $menu."=menu<br>";
+$pfad=$_POST['pfad'];
+//echo $pfad."=pfad<br>";
 $dbtable=$_GET['dbtable'];
-$fldindex=$_GET['fldindexremote'];
-$fldindexloc=_$_GET['fldindex'];
+$fldindex=$_POST['fldindex'];
+$fldindexrmt=$_GET['fldindexremote'];
+$fldindexloc=$_GET['fldindexloc'];
 $nuranzeigen=$_GET['nuranzeigen'];
 $urladr=$_GET['urladr'];
 bootstraphead();
 bootstrapbegin("Datenaustausch");
+//$database="/var/www/html/android/own/joorgsqlite/data/joorgsqlite.db";
+$database=$_POST['database'];
+echo $database."=database<br>";
+//$db = new SQLite3($database);
+$dbtyp="MYSQL";
+$dbuser="root";
+$dbpassword="mysql";
+$db=dbopentyp($dbtyp,$database,$dbuser,$dbpassword);
 
-
+$showsync=$_GET['showsync'];
+$dbsyncnr=8;
 echo "<a href='http://".$pfad."showtab.php?menu=".$menu."'  class='btn btn-primary btn-sm active' role='button'>Zurück</a> ";
-echo "<div class='alert alert-success'>";
-echo "Daten von ".$pfad." holen.";
-echo "</div>";
+if ($showsync=="J") {
+  $website="allnosync.php?menu=".$menu;	
+  echo "<form class='form-horizontal' method='post' action='".$website."'>";
+  echo "<input type='submit' value='All NoSync' />";
+  echo "<input type='hidden' name='pfad' value='".$pfad."' />";
+  echo "<input type='hidden' name='dbtable' value='".$dbtable."' />";
+  echo "<input type='hidden' name='database' value='".$database."' />";
+  echo "<input type='hidden' name='dbsyncnr' value='".$dbsyncnr."' />";
+  echo "</form>";	
+  //echo "<a href='allnosync.php?menu=".$menu."&pfad=".$pfad."&dbtable=".$dbtable."'  class='btn btn-primary btn-sm active' role='button'>All NoSync</a> ";
 
-$db = new SQLite3('../data/joorgsqlite.db');
+  echo "<div class='alert alert-success'>";
+  //timestamp ermitteln
+  $qryval = "SELECT * FROM tblsyncstatus WHERE fldtable='".$dbtable."'";
+  //echo $qryval."<br>";
+  $results = $db->query($qryval);
+  if ($linval = $results->fetchArray()) {
+    $timestamp=$linval['fldtimestamp'];
+  } else {
+    $timestamp="";
+  }	
+  echo "Timestamp:".$timestamp."<br>";
+  //echo $database."<br>";
+  echo "</div>";
+
+
+  $col="*";
+  $qryval = "SELECT ".$col." FROM ".$dbtable." WHERE fldtimestamp>'".$timestamp."' AND flddbsyncnr=".$dbsyncnr." AND flddbsyncstatus='SYNC'";
+  //echo $qryval."<br>";
+  $results = $db->query($qryval);
+  echo "<table class='table table-hover'>";  
+  echo "<tr><th>dummy</th><th>NOSYNC</th></tr>";
+  while ($linval = $results->fetchArray()) {
+    echo "<tr>";
+    echo "<td>";
+    echo $linval['fldVondatum'];
+    echo "</td>";
+    echo "<td><a href='nosync.php?menu=".$menu."&dbindex=".$linval[$fldindex]."' class='btn btn-primary btn-sm active' role='button'>NOSYNC</a></td> ";
+    echo "</tr>";
+  }
+  echo "</table>";
+
+  
+} else {
+echo "menu=".$menu."<br>";
+echo "pfad=".$pfad."<br>";
+echo "dbtable=".$dbtable."<br>";
+echo "fldindexrmt=".$fldindexrmt."<br>";
+echo "fldindexloc=".$fldindexloc."<br>";
+echo "nuranzeigen=".$nuranzeigen."<br>";
+echo "urladr=".$urladr."<br>";
+
+
+//echo "<a href='http://".$pfad."showtab.php?menu=".$menu."'  class='btn btn-primary btn-sm active' role='button'>Zurück</a> ";
+echo "<div class='alert alert-success'>";
+echo "Daten von ".$pfad." holen.<br>";
 
 //timestamp ermitteln
 $qryval = "SELECT * FROM tblsyncstatus WHERE fldtable='".$dbtable."'";
+//echo $qryval."<br>";
 $results = $db->query($qryval);
 if ($linval = $results->fetchArray()) {
   $timestamp=$linval['fldtimestamp'];
 } else {
   $timestamp="";
 }	
+echo "Timestamp:".$timestamp."<br>";;
+echo "</div>";
 
 $col = "";
 $lincnt = 1;
 $count = 0;
-$results = $db->query("SELECT name,sql FROM sqlite_master WHERE type='table' AND name='".$dbtable."'");
+$query="SELECT name,sql FROM sqlite_master WHERE type='table' AND name='".$dbtable."'";
+//echo $query."<br>";
+$results = $db->query($query);
 $arrcol = array();
 if ($row = $results->fetchArray()) {
   $colstr=$row['sql'];
@@ -62,6 +131,7 @@ echo "<input type='hidden' name='urladr' value='".$urladr."'/>";
 echo "<input type='hidden' name='timestamp' value='".$timestamp."'/>"; 
 
 $qryval = "SELECT ".$col." FROM ".$dbtable." WHERE fldtimestamp>'".$timestamp."' AND flddbsyncnr=".$autoinc_start;
+echo $qryval."<br>";
 $results = $db->query($qryval);
 echo "<input type='hidden' name='sql' value='".$qryval."'/>";
 $datcnt=0;
@@ -76,8 +146,8 @@ while ($linval = $results->fetchArray()) {
       $updsql = $updsql.",".$arrcol[$lincount]."=#".$linval[$lincount]."#";
     }
     $datcnt=$datcnt+1;
-    $index=$linval[$fldindex];
-    $updsql="UPDATE ".$dbtable." SET ".$updsql." WHERE ".$fldindex."=".$index;
+    $index=$linval[$fldindexrmt];
+    $updsql="UPDATE ".$dbtable." SET ".$updsql." WHERE ".$fldindexrmt."=".$index;
     $inssql = "INSERT INTO ".$dbtable."(".$col.") VALUES (".$val.");";
     //echo $updsql."<br>";
     //echo "<input type='hidden' name='sqlarr".$datcnt."' value='".$qry."'/>";
@@ -101,12 +171,14 @@ echo "</div>";
 
 if ($nuranzeigen<>"anzeigen") {
   if ($timestamp=="") {
-    $sql="INSERT INTO tblsyncstatus (fldtable,fldtimestamp) VALUES ('".$dbtable."',CURRENT_TIMESTAMP)";
+    $sql="INSERT INTO tblsyncstatus (fldtable,fldtimestamp) VALUES ('".$dbtable."',datetime('now', 'localtime'))";
   } else {
-    $sql="UPDATE tblsyncstatus SET fldtimestamp=CURRENT_TIMESTAMP WHERE fldtable='".$dbtable."'";
+    $sql="UPDATE tblsyncstatus SET fldtimestamp=datetime('now', 'localtime') WHERE fldtable='".$dbtable."'";
   }  
   $query = $db->exec($sql);
 }
+}
+
 bootstrapend();
 
 ?>

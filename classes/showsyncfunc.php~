@@ -8,17 +8,29 @@ function showauswahl($menu,$database) {
   echo "<form class='form-horizontal' method='post' action='showsync.php?showsync=1&menu=".$menu."'>";
   echo "<select name='typ' size='1'>";
   echo "<option style='background-color:#c0c0c0;' >local</option>";
-  echo "<option style='background-color:#c0c0c0;' >remote</option>";
+  echo "<option style='background-color:#c0c0c0;' selected>remote</option>";
   echo "</select>";
   echo "<dd><input type='submit' value='Anzeige starten' /></dd>";
   echo "</form>";
 	
 }
 
-function showsynclocal($menu,$database) {
+function showsynclocal($menu,$database,$pfad) {
   $db = new SQLite3('../data/'.$database);
   $qry = "SELECT * FROM tbltable";
   $results = $db->query($qry);
+
+  $dbtable="tblfahrtenbuch";
+  $dbsyncnr=1;
+  $website="allnosync.php?menu=".$menu;	
+  echo "<form class='form-horizontal' method='post' action='".$website."'>";
+  echo "<input type='submit' value='All NoSync' />";
+  echo "<input type='hidden' name='pfad' value='".$pfad."' />";
+  echo "<input type='hidden' name='dbtable' value='".$dbtable."' />";
+  echo "<input type='hidden' name='database' value='".$database."' />";
+  echo "<input type='hidden' name='dbsyncnr' value='".$dbsyncnr."' />";
+  echo "</form>";	
+
   echo "<br>";
   while ($line = $results->fetchArray()) {
     $aktiv=$line['fldaktiv'];
@@ -36,6 +48,14 @@ function showsynclocal($menu,$database) {
       $dblocal="dbjoorgportal";
       $dbuser="root";
       $dbpassword="mysql";
+
+  echo "<table>";
+  echo "<tr><td>Pfad</td><td> : ".$pfad."</td></tr>";
+  echo "<tr><td>Datenbank</td><td> : ".$dblocal."</td></tr>";
+  echo "<tr><td>Table</td><td> : ".$dbtable."</td></tr>";
+  echo "<tr><td>dbsyncnr</td><td> : ".$dbsyncnr."</td></tr>";
+  echo "</table>";
+
       $dblocal=dbopentyp($dbtyp,$dblocal,$dbuser,$dbpassword);
       $col="*";
       $timestamp="2015-01-01 06:00:00";
@@ -60,14 +80,26 @@ function showsynclocal($menu,$database) {
 
 }
 
-function showsyncremote($menu,$database) {
-  $pfad="localhost/own/mysync/classes/";	
+function showsyncremote($menu,$database,$pfad) {
+  echo "<br><br>";	
+  $remotedatabase="/var/www/html/android/own/joorgsqlite/data/joorgsqlite.db";
   $dbtable="tblfahrtenbuch";
-  $website="http://localhost/android/own/joorgsqlite/classes/syncremoteSQLITE3.php?menu=".$menu."&dbtable=".$dbtable."&pfad=".$pfad."&showsync=J";	
+  $fldindex="fldindex";
+  $website="http://localhost/own/phpmysyncremote/classes/syncremoteSQLITE3.php?menu=".$menu."&dbtable=".$dbtable."&showsync=J";	
   echo "<div class='alert alert-info'>";
-  echo $website."<br>";
+  //echo $website."<br>";
+  echo "<table>";
+  echo "<tr><td>website</td><td> : ".$website."</td></tr>";
+  echo "<tr><td>Pfad</td><td> : ".$pfad."</td></tr>";
+  echo "<tr><td>Datenbank</td><td> : ".$remotedatabase."</td></tr>";
+  echo "<tr><td>Table</td><td> : ".$dbtable."</td></tr>";
+  echo "<tr><td>fldindex</td><td> : ".$fldindex."</td></tr>";
+  echo "</table>";
   echo "</div>";
   echo "<form class='form-horizontal' method='post' action='".$website."'>";
+  echo "<input type='hidden' name='pfad' value='".$pfad."' />";
+  echo "<input type='hidden' name='database' value='".$remotedatabase."' />";
+  echo "<input type='hidden' name='fldindex' value='".$fldindex."' />";
   echo "<dd><input type='submit' value='Daten zeigen' /></dd>";
   echo "</form>";
 
