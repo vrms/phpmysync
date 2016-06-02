@@ -66,11 +66,23 @@ $listarray = array ( array ( 'label' => 'Von Datenbank',
                              'width' => 10, 
                              'type' => 'JN',
                              'dbfield' => 'fldaktiv' ),
-                     array ( 'label' => '',
+                     array ( 'label' => 'JN',
                              'width' => 5, 
                              'type' => 'icon',
                              'func' => 'mark.php',
                              'dbfield' => 'icon-book' ));
+
+$filterarray = array ( 
+                       array ( 'label' => 'aktiv:',
+                               'name' => 'fltaktiv', 
+                               'width' => 10, 
+                               'type' => 'select',
+                               'sign' => '=',
+                               'dbtable' => 'tblselect',
+                               'seldbindex' => 'fldindex',
+                               'seldbfield' => 'fldbez',
+                               'dbfield' => 'fldaktiv' ));
+
                              
 
 $pararray = array ( 'headline' => 'Tables',

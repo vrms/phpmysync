@@ -15,7 +15,8 @@ echo "syncremote<br><br>";
   echo "</table>";
   echo "</div>";
 
-  echo "<form class='form-horizontal' method='post' action='".$callbackurl."&onlyshow=".$onlyshow."'>";
+  echo "<form class='form-horizontal' method='post' action='".$callbackurl."'>";
+  echo "<input type='hidden' name='onlyshow' value='".$onlyshow."' />";
   if ($action=="einspielen") {
     echo "<input type='hidden' name='status' value='fertig' />";
     echo "<input type='submit' value='Daten fertig' />";

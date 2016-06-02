@@ -53,6 +53,14 @@ $listarray = array ( array ( 'label' => 'Pfad',
                              'func' => 'tablelist.php?menu=table',
                              'dbfield' => 'icon-book' ));
 
+$filterarray = array ( 
+                              
+                       array ( 'label' => 'aktiv:',
+                               'name' => 'fltaktiv', 
+                               'width' => 10, 
+                               'type' => 'JN',
+                               'sign' => '=',
+                               'dbfield' => 'fldaktiv' ));
 
 $pararray = array ( 'headline' => 'Datenbanken',
                     'dbtable' => 'tbldatabase',

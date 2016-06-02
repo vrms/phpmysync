@@ -1,10 +1,11 @@
 <?php
 include("bootstrapfunc.php");
+include("dbtool.php");
 include("../config.php");
 $menu=$_GET['menu'];
-echo $menu."=menu<br>";
+//echo $menu."=menu<br>";
 $pfad=$_POST['pfad'];
-echo $pfad."=pfad<br>";
+//echo $pfad."=pfad<br>";
 $dbtable=$_GET['dbtable'];
 $fldindex=$_POST['fldindex'];
 $fldindexrmt=$_GET['fldindexremote'];
@@ -16,7 +17,12 @@ bootstrapbegin("Datenaustausch");
 //$database="/var/www/html/android/own/joorgsqlite/data/joorgsqlite.db";
 $database=$_POST['database'];
 echo $database."=database<br>";
-$db = new SQLite3($database);
+//$db = new SQLite3($database);
+$dbtyp="MYSQL";
+$dbuser="root";
+$dbpassword="mysql";
+$db=dbopentyp($dbtyp,$database,$dbuser,$dbpassword);
+
 $showsync=$_GET['showsync'];
 $dbsyncnr=8;
 echo "<a href='http://".$pfad."showtab.php?menu=".$menu."'  class='btn btn-primary btn-sm active' role='button'>Zurück</a> ";
@@ -79,9 +85,11 @@ echo "Daten von ".$pfad." holen.<br>";
 
 //timestamp ermitteln
 $qryval = "SELECT * FROM tblsyncstatus WHERE fldtable='".$dbtable."'";
-//echo $qryval."<br>";
-$results = $db->query($qryval);
-if ($linval = $results->fetchArray()) {
+echo $qryval."<br>";
+$results = dbquerytyp("SQLITE3",$db,$qryval);
+//$results = $db->query($qryval);
+if ($linval = dbfetchtyp("SQLITE3",$results)) {
+//if ($linval = $results->fetchArray()) {
   $timestamp=$linval['fldtimestamp'];
 } else {
   $timestamp="";
@@ -94,9 +102,11 @@ $lincnt = 1;
 $count = 0;
 $query="SELECT name,sql FROM sqlite_master WHERE type='table' AND name='".$dbtable."'";
 //echo $query."<br>";
-$results = $db->query($query);
+$results = dbquerytyp("SQLITE3",$db,$query);
+//$results = $db->query($query);
 $arrcol = array();
-if ($row = $results->fetchArray()) {
+//if ($row = $results->fetchArray()) {
+if ($row = dbfetchtyp("SQLITE3",$results)) {
   $colstr=$row['sql'];
   $pos = strpos($colstr, '(', 0);
   $colstr=substr($colstr,$pos+1,-1); 
@@ -169,7 +179,7 @@ if ($nuranzeigen<>"anzeigen") {
   } else {
     $sql="UPDATE tblsyncstatus SET fldtimestamp=datetime('now', 'localtime') WHERE fldtable='".$dbtable."'";
   }  
-  $query = $db->exec($sql);
+  //$query = $db->exec($sql);
 }
 }
 

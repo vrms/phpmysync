@@ -4,40 +4,43 @@ include("dbtool.php");
 include("syncfunc.php");
 include("../config.php");
 $menu=$_GET['menu'];
+$onlyshow=$_GET['onlyshow'];
+if ($onlyshow=="") {
+  $onlyshow="N";
+}	
 include("../sites/views/".$menu."/showtab.inc.php");
-$status=$_POST['status'];
-$sql=$_POST['sql'];
 bootstraphead();
 bootstrapbegin("Datenaustausch");
 echo "<a href='showtab.php?menu=".$menu."'  class='btn btn-primary btn-sm active' role='button'>Zurück</a> ";
-$fldindex=$pararray['fldindex'];
-//$pfad="localhost:8080/own/mysync/classes/";
+$status=$_POST['status'];
 switch ( $status ) {
-  case 'local':
-    $urladr=$_POST['urladr'];
-    $nuranzeigen=$_POST['nuranzeigen'];
-    synclocal($database,$menu,$urladr,$pfad,$nuranzeigen);
+  case 'sync':
+    $typ=$_POST['typ'];
+    if ($typ=="local") { 	
+      auslesen($menu,$onlyshow);
+    } else {
+    	fernabfrage($menu,$onlyshow);
+    }
+    //if ($typ=="local") { 	
+    //  showsynclocal($menu,$database,$pfad,$onlyshow);
+    //} else {
+    //  showsyncremote($menu,$database,$pfad);
+    //}    
   break;
   case 'senden':
-    syncsenden();
-  break;
-  case 'empfangen':
-    $datcntremote=$_POST['datcntremote'];
-    $nuranzeigen=$_POST['nuranzeigen'];
+    $datcnt=$_POST['datcnt'];
     $dbtable=$_POST['dbtable'];
-	 $fldindex=$_POST['dbindexloc'];
-    $timestamp=$_POST['timestamp'];
-    syncempfangen($database,$nuranzeigen,$datcntremote,$dbtable,$fldindex,$timestamp);
+    $dbvontyp=$_POST['dbvontyp'];
+    syncsenden($database,$datcnt,$dbvontyp,$dbtable);
+  break;
+  case 'einspielen':
+    einspielen();
   break;
   case 'fertig':
-    $nuranzeigen=$_POST['nuranzeigen'];
-    $dbtable=$_POST['dbtable'];
-    $timestamp=$_POST['timestamp'];
-    syncfertig($database,$nuranzeigen,$dbtable,$timestamp);
+    abschliessen($onlyshow);
   break;
   default:
-    syncauswahl($database,$menu);
+    showauswahl($menu,$database,$onlyshow);
 }
 bootstrapend();
-
 ?>

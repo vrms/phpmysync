@@ -14,26 +14,32 @@ $nuranzeigen=$_GET['nuranzeigen'];
 $urladr=$_GET['urladr'];
 bootstraphead();
 bootstrapbegin("Datenaustausch");
-//$database="/var/www/html/android/own/joorgsqlite/data/joorgsqlite.db";
-$database=$_POST['database'];
+$database="/var/www/html/own/joorgsqlite/data/joorgsqlite.db";
+//$database=$_POST['database'];
+//$database="dbjoorgportal";
 echo $database."=database<br>";
 //$db = new SQLite3($database);
-$dbtyp="MYSQL";
-$dbuser="root";
-$dbpassword="mysql";
+$dbtyp="SQLITE3";
+$dbuser="";
+$dbpassword="";
 $db=dbopentyp($dbtyp,$database,$dbuser,$dbpassword);
 
 $showsync=$_GET['showsync'];
 $dbsyncnr=8;
 echo "<a href='http://".$pfad."showtab.php?menu=".$menu."'  class='btn btn-primary btn-sm active' role='button'>Zurück</a> ";
 if ($showsync=="J") {
+  $fldindex="fldindex";	
+  $timestamp="2015-01-01 06:00:00";
   $website="allnosync.php?menu=".$menu;	
   echo "<form class='form-horizontal' method='post' action='".$website."'>";
   echo "<input type='submit' value='All NoSync' />";
   echo "<input type='hidden' name='pfad' value='".$pfad."' />";
+  echo "<input type='hidden' name='dbtyp' value='".$dbtyp."' />";
   echo "<input type='hidden' name='dbtable' value='".$dbtable."' />";
   echo "<input type='hidden' name='database' value='".$database."' />";
   echo "<input type='hidden' name='dbsyncnr' value='".$dbsyncnr."' />";
+  echo "<input type='hidden' name='timestamp' value='".$timestamp."' />";
+  echo "<input type='hidden' name='fldindex' value='".$fldindex."' />";
   echo "</form>";	
   //echo "<a href='allnosync.php?menu=".$menu."&pfad=".$pfad."&dbtable=".$dbtable."'  class='btn btn-primary btn-sm active' role='button'>All NoSync</a> ";
 
@@ -41,27 +47,33 @@ if ($showsync=="J") {
   //timestamp ermitteln
   $qryval = "SELECT * FROM tblsyncstatus WHERE fldtable='".$dbtable."'";
   //echo $qryval."<br>";
-  $results = $db->query($qryval);
-  if ($linval = $results->fetchArray()) {
-    $timestamp=$linval['fldtimestamp'];
-  } else {
-    $timestamp="";
-  }	
+  //$results = $db->query($qryval);
+  //if ($linval = $results->fetchArray()) {
+  //  $timestamp=$linval['fldtimestamp'];
+  //} else {
+  //  $timestamp="";
+  //}	
   echo "Timestamp:".$timestamp."<br>";
   //echo $database."<br>";
   echo "</div>";
 
 
   $col="*";
-  $qryval = "SELECT ".$col." FROM ".$dbtable." WHERE fldtimestamp>'".$timestamp."' AND flddbsyncnr=".$dbsyncnr." AND flddbsyncstatus='SYNC'";
-  //echo $qryval."<br>";
+  $qryval = "SELECT ".$col." FROM ".$dbtable." WHERE fldtimestamp>'".$timestamp."' AND flddbsyncstatus='SYNC'";
+  echo $qryval."<br>";
   $results = $db->query($qryval);
   echo "<table class='table table-hover'>";  
-  echo "<tr><th>dummy</th><th>NOSYNC</th></tr>";
+  echo "<tr>";
+  echo "<th>dummy</th>";
+  echo "<th>dummy</th>";
+  echo "<th>NOSYNC</th></tr>";
   while ($linval = $results->fetchArray()) {
     echo "<tr>";
     echo "<td>";
     echo $linval['fldVondatum'];
+    echo "</td>";
+    echo "<td>";
+    echo $linval['fldFahrzeug'];
     echo "</td>";
     echo "<td><a href='nosync.php?menu=".$menu."&dbindex=".$linval[$fldindex]."' class='btn btn-primary btn-sm active' role='button'>NOSYNC</a></td> ";
     echo "</tr>";
@@ -85,9 +97,11 @@ echo "Daten von ".$pfad." holen.<br>";
 
 //timestamp ermitteln
 $qryval = "SELECT * FROM tblsyncstatus WHERE fldtable='".$dbtable."'";
-//echo $qryval."<br>";
-$results = $db->query($qryval);
-if ($linval = $results->fetchArray()) {
+echo $qryval."<br>";
+$results = dbquerytyp("SQLITE3",$db,$qryval);
+//$results = $db->query($qryval);
+if ($linval = dbfetchtyp("SQLITE3",$results)) {
+//if ($linval = $results->fetchArray()) {
   $timestamp=$linval['fldtimestamp'];
 } else {
   $timestamp="";
@@ -100,9 +114,11 @@ $lincnt = 1;
 $count = 0;
 $query="SELECT name,sql FROM sqlite_master WHERE type='table' AND name='".$dbtable."'";
 //echo $query."<br>";
-$results = $db->query($query);
+$results = dbquerytyp("SQLITE3",$db,$query);
+//$results = $db->query($query);
 $arrcol = array();
-if ($row = $results->fetchArray()) {
+//if ($row = $results->fetchArray()) {
+if ($row = dbfetchtyp("SQLITE3",$results)) {
   $colstr=$row['sql'];
   $pos = strpos($colstr, '(', 0);
   $colstr=substr($colstr,$pos+1,-1); 
@@ -175,7 +191,7 @@ if ($nuranzeigen<>"anzeigen") {
   } else {
     $sql="UPDATE tblsyncstatus SET fldtimestamp=datetime('now', 'localtime') WHERE fldtable='".$dbtable."'";
   }  
-  $query = $db->exec($sql);
+  //$query = $db->exec($sql);
 }
 }
 

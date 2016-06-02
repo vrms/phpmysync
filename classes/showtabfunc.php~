@@ -367,7 +367,7 @@ while ($row = $results->fetchArray()) {
       switch ( $arrelement['type'] )
       {
         case 'icon':
-            echo "<td><a href='".$arrelement['func']."?menu=".$menu."&id=".$row['fldindex']."' class='btn btn-primary btn-sm active' role='button'>".$arrelement['label']."</a></td> ";
+            echo "<td><a href='".$arrelement['func']."?id=".$row['fldindex']."' class='btn btn-primary btn-sm active' role='button'>".$arrelement['label']."</a></td> ";
         break;
         case 'nummer':
           $nummer=$nummer+1;

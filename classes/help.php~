@@ -2,6 +2,7 @@
 session_start();
 $typ=$_GET['typ'];
 include("bootstrapfunc.php");
+include("../config.php");
 bootstraphead();
 bootstrapbegin("Hilfe");
 $menu=$_GET['menu'];
@@ -19,20 +20,22 @@ if ($action=="forward") {
   $pageno=$pageno+1;
   $pagename="";
 }	
-$db = new SQLite3('../data/joorgsqlite.db');
+$db = new SQLite3('../data/'.$database);
 if ($pagename=="") {
   $query="SELECT * FROM tblhelppage WHERE fldpageno='".$pageno."'";
 } else {
   $query="SELECT * FROM tblhelppage WHERE fldpagename='".$pagename."'";
 }  
-//echo $query."<br>";
+echo $query."<br>";
 $results = $db->query($query);
 $lok=false;
 $pageno=0;
+echo "1<br>";
 if ($row = $results->fetchArray() ) { 
   $lok=true;
   $pageno=$row['fldpageno'];
 }
+echo $typ."=2<br>";
 echo "<br>";
 if ($typ<>"print") {
   echo "<a href='../index.php' class='btn btn-primary btn-sm active' role='button'>Menü</a> "; 
@@ -45,7 +48,7 @@ if ($typ<>"print") {
 echo "<p class='text-justify'>";
 if ($lok) { 
   $_SESSION["menu"]=$menu;
-  include("../help/de-DE/".$row['fldhelpurl']);
+  include("../sites/help/de-DE/".$row['fldhelpurl']);
   echo "<br> Seite ".$pageno;
 } else {
   echo "<div class='alert alert-error'>";
