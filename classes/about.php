@@ -9,7 +9,16 @@ $versnr=$ini_array['versnr'];
 $ini_locarr = parse_ini_file("http://horald.github.io/joorgsqlite/versionphpmysync.txt");
 $neueversdat=$ini_locarr['versdatphpmysync'];
 $neueversnr=$ini_locarr['versnrphpmysync'];
+if ($neueversdat=="") {
+  $ini_locarr = parse_ini_file("../version-new.txt");
+  $neueversdat=$ini_locarr['versdatphpmysync'];
+  $neueversnr=$ini_locarr['versnrphpmysync'];
+}
 echo "<a href='../index.php' class='btn btn-primary btn-sm active' role='button'>Menü</a> "; 
+if ($versnr<$neueversnr) {
+  echo "<a href='checkupdate.php' class='btn btn-primary btn-sm active' role='button'>Update</a> "; 
+}
+echo "<a href='help.php?url=about.php' class='btn btn-primary btn-sm active' role='button'>Hilfe</a> "; 
 echo "<pre>";
 echo "<table>";
 echo "<tr><td>Stand</td>  <td>: ".$versdat."</td></tr>";

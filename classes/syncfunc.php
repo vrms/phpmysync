@@ -1,4 +1,5 @@
 <?php
+header("content-type: text/html; charset=utf-8");
 
 function showauswahl($menu,$database,$onlyshow) {
   $db = new SQLite3('../data/'.$database);
@@ -9,16 +10,32 @@ function showauswahl($menu,$database,$onlyshow) {
   $arrnchtables = array();
   $arrvonindex = array();
   $arrnchindex = array();
+  $arrvonbez = array();
+  $arrnchbez = array();
   $arrnchwebsite = array();
+  $arrvondbtyp = array();
   $arrnchdbtyp = array();
+  $arrvondbname = array();
+  $arrnchdbname = array();
+  $arrvondbuser = array();
+  $arrvondbpassword = array();
   while ($line = $results->fetchArray()) {
     $aktiv=$line['fldaktiv'];
     if ($aktiv=='J') {
       $anztables=$anztables+1;
       array_push($arrvontables,$line['fldvontblname']);
-      array_push($arrnchtables,$line['fldvontblindex']);
+      array_push($arrnchtables,$line['fldnachtblname']);
       array_push($arrvonindex,$line['fldvontblindex']);
-      array_push($arrnchindex,$line['fldnachindex']);
+      array_push($arrnchindex,$line['fldnachtblindex']);
+      array_push($arrvonbez,$line['fldvontblbez']);
+      array_push($arrnchbez,$line['fldnachtblbez']);
+      $qrydb = "SELECT * FROM tbldatabase WHERE fldindex=".$line['fldid_vondatabase'];
+      $resdb = $db->query($qrydb);
+      $lindb = $resdb->fetchArray();
+      array_push($arrvondbtyp,$lindb['flddbtyp']);
+      array_push($arrvondbname,$lindb['fldbez']);
+      array_push($arrvondbuser,$lindb['flddbuser']);
+      array_push($arrvondbpassword,$lindb['flddbpassword']);
       $qrydb = "SELECT * FROM tbldatabase WHERE fldindex=".$line['fldid_nachdatabase'];
       //echo $qrydb."<br>";
       $resdb = $db->query($qrydb);
@@ -26,35 +43,56 @@ function showauswahl($menu,$database,$onlyshow) {
       //echo $lindb['fldpfad'];
       array_push($arrnchwebsite,$lindb['fldpfad']);
       array_push($arrnchdbtyp,$lindb['flddbtyp']);
+      array_push($arrnchdbname,$lindb['fldbez']);
     }
   }  
 
-  $strvontables=json_encode($arrvontables);
-  $strnchtables=json_encode($arrnchtables);
-  $strvonindex=json_encode($arrvonindex);
-  $strnchindex=json_encode($arrnchindex);
-  $strnchwebsite=json_encode($arrnchwebsite);
-  $strnchdbtyp=json_encode($arrnchdbtyp);
-  //echo $strtables."<br>";
-  $value="Anzeige starten";
-  if ($onlyshow=="N") {
-    $value="Sync starten";
-  }
-  echo "<form class='form-horizontal' method='post' action='sync.php?showsync=1&menu=".$menu."&onlyshow=".$onlyshow."'>";
-  echo "<select name='typ' size='1'>";
-  echo "<option style='background-color:#c0c0c0;' selected>local</option>";
-  echo "<option style='background-color:#c0c0c0;' >remote</option>";
-  echo "</select>";
-  echo "<input type='hidden' name='status' value='sync' />";
-  echo "<input type='hidden' name='anztables' value=".$anztables." />";
-  echo "<input type='hidden' name='strvontables' value=".$strvontables." />";
-  echo "<input type='hidden' name='strnchtables' value=".$strnchtables." />";
-  echo "<input type='hidden' name='strvonindex' value=".$strvonindex." />";
-  echo "<input type='hidden' name='strnchindex' value=".$strnchindex." />";
-  echo "<input type='hidden' name='strnchwebsite' value=".$strnchwebsite." />";
-  echo "<input type='hidden' name='strnchdbtyp' value=".$strnchdbtyp." />";
-  echo "<dd><input type='submit' value='".$value."' /></dd>";
-  echo "</form>";
+  if ($anztables==0) {
+    echo "<div class='alert alert-warning'>";
+    echo "Keine Tables zum synchronisieren aktiviert.";
+    echo "</div>";
+  } else {
+    $strvontables=json_encode($arrvontables);
+    $strnchtables=json_encode($arrnchtables);
+    $strvonindex=json_encode($arrvonindex);
+    $strnchindex=json_encode($arrnchindex);
+    $strvonbez=json_encode($arrvonbez);
+    $strnchbez=json_encode($arrnchbez);
+    $strnchwebsite=json_encode($arrnchwebsite);
+    $strvondbtyp=json_encode($arrvondbtyp);
+    $strnchdbtyp=json_encode($arrnchdbtyp);
+    $strvondbname=json_encode($arrvondbname);
+    $strnchdbname=json_encode($arrnchdbname);
+    $strvondbuser=json_encode($arrvondbuser);
+    $strvondbpassword=json_encode($arrvondbpassword);
+    //echo $strnchindex."<br>";
+    $value="Anzeige starten";
+    if ($onlyshow=="N") {
+      $value="Sync starten";
+    }
+    echo "<form class='form-horizontal' method='post' action='sync.php?showsync=1&menu=".$menu."&onlyshow=".$onlyshow."'>";
+    echo "<select name='typ' size='1'>";
+    echo "<option style='background-color:#c0c0c0;' selected>local</option>";
+    echo "<option style='background-color:#c0c0c0;' >remote</option>";
+    echo "</select>";
+    echo "<input type='hidden' name='status' value='sync' />";
+    echo "<input type='hidden' name='anztables' value=".$anztables." />";
+    echo "<input type='hidden' name='strvontables' value=".$strvontables." />";
+    echo "<input type='hidden' name='strnchtables' value=".$strnchtables." />";
+    echo "<input type='hidden' name='strvonindex' value=".$strvonindex." />";
+    echo "<input type='hidden' name='strnchindex' value=".$strnchindex." />";
+    echo "<input type='hidden' name='strvonbez' value=".$strvonbez." />";
+    echo "<input type='hidden' name='strnchbez' value=".$strnchbez." />";
+    echo "<input type='hidden' name='strnchwebsite' value=".$strnchwebsite." />";
+    echo "<input type='hidden' name='strvondbtyp' value=".$strvondbtyp." />";
+    echo "<input type='hidden' name='strnchdbtyp' value=".$strnchdbtyp." />";
+    echo "<input type='hidden' name='strvondbname' value=".$strvondbname." />";
+    echo "<input type='hidden' name='strnchdbname' value=".$strnchdbname." />";
+    echo "<input type='hidden' name='strvondbuser' value=".$strvondbuser." />";
+    echo "<input type='hidden' name='strvondbpassword' value=".$strvondbpassword." />";
+    echo "<dd><input type='submit' value='".$value."' /></dd>";
+    echo "</form>";
+  }	
   
 	
 }
@@ -275,7 +313,7 @@ function syncsenden($database,$datcnt,$dbtypVon,$dbtable) {
 function auslesen($menu,$onlyshow) {
   echo "<div class='alert alert-success'>";
   echo "Auslesen<br><br>";
-  echo "<div>";
+  echo "</div>";
 
 //  $websitetest="http://localhost/own/phpmysync/classes/syncremote.php?menu=".$menu;
   $aktpfad=$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'];  
@@ -286,10 +324,30 @@ function auslesen($menu,$onlyshow) {
   for($tablecount = 1; $tablecount < $anztables; $tablecount++) {
   	 $strvontables=$strvontables.",".$arrvontables[$tablecount];
   }
+  $arrnchtables=json_decode($_POST["strnchtables"]);
+  $strnchtables=$arrnchtables[0];
+  for($tablecount = 1; $tablecount < $anztables; $tablecount++) {
+  	 $strnchtables=$strnchtables.",".$arrnchtables[$tablecount];
+  }
   $arrvonindex=json_decode($_POST["strvonindex"]);
   $strvonindex=$arrvonindex[0];
   for($tablecount = 1; $tablecount < $anztables; $tablecount++) {
   	 $strvonindex=$strvonindex.",".$arrvonindex[$tablecount];
+  }
+  $arrnchindex=json_decode($_POST["strnchindex"]);
+  $strnchindex=$arrnchindex[0];
+  for($tablecount = 1; $tablecount < $anztables; $tablecount++) {
+  	 $strnchindex=$strnchindex.",".$arrnchindex[$tablecount];
+  }
+  $arrvonbez=json_decode($_POST["strvonbez"]);
+  $strvonbez=$arrvonbez[0];
+  for($tablecount = 1; $tablecount < $anztables; $tablecount++) {
+  	 $strvonbez=$strvonbez.",".$arrvonbez[$tablecount];
+  }
+  $arrnchbez=json_decode($_POST["strnchbez"]);
+  $strnchbez=$arrnchbez[0];
+  for($tablecount = 1; $tablecount < $anztables; $tablecount++) {
+  	 $strnchbez=$strnchbez.",".$arrnchbez[$tablecount];
   }
   $arrnchwebsite=json_decode($_POST["strnchwebsite"]);
   $strnchwebsite=$arrnchwebsite[0];
@@ -297,10 +355,35 @@ function auslesen($menu,$onlyshow) {
   	 $strnchwebsite=$strnchwebsite.",".$arrnchwebsite[$tablecount];
   }
   $website=$arrnchwebsite[0]."classes/syncremote.php?menu=".$menu;
+  $arrvondbtyp=json_decode($_POST["strvondbtyp"]);
+  $strvondbtyp=$arrvondbtyp[0];
+  for($tablecount = 1; $tablecount < $anztables; $tablecount++) {
+  	 $strvondbtyp=$strvondbtyp.",".$arrvondbtyp[$tablecount];
+  }
   $arrnchdbtyp=json_decode($_POST["strnchdbtyp"]);
   $strnchdbtyp=$arrnchdbtyp[0];
   for($tablecount = 1; $tablecount < $anztables; $tablecount++) {
   	 $strnchdbtyp=$strnchdbtyp.",".$arrnchdbtyp[$tablecount];
+  }
+  $arrvondbname=json_decode($_POST["strvondbname"]);
+  $strvondbname=$arrvondbname[0];
+  for($tablecount = 1; $tablecount < $anztables; $tablecount++) {
+  	 $strvondbname=$strvondbname.",".$arrvondbname[$tablecount];
+  }
+  $arrnchdbname=json_decode($_POST["strnchdbname"]);
+  $strnchdbname=$arrnchdbname[0];
+  for($tablecount = 1; $tablecount < $anztables; $tablecount++) {
+  	 $strnchdbname=$strnchdbname.",".$arrnchdbname[$tablecount];
+  }
+  $arrvondbuser=json_decode($_POST["strvondbuser"]);
+  $strvondbuser=$arrvondbuser[0];
+  for($tablecount = 1; $tablecount < $anztables; $tablecount++) {
+  	 $strvondbuser=$strvondbuser.",".$arrvondbuser[$tablecount];
+  }
+  $arrvondbpassword=json_decode($_POST["strvondbpassword"]);
+  $strvondbpassword=$arrvondbpassword[0];
+  for($tablecount = 1; $tablecount < $anztables; $tablecount++) {
+  	 $strvondbpassword=$strvondbpassword.",".$arrvondbpassword[$tablecount];
   }
   
 
@@ -308,21 +391,69 @@ function auslesen($menu,$onlyshow) {
   echo "<table>";
 //  echo "<tr><td>website (Test)</td><td> : ".$websitetest."</td></tr>";
   echo "<tr><td>website</td><td> : ".$website."</td></tr>";
-  echo "<tr><td>callbackurl</td><td> : ".$callbackurl."</td></tr>";
-  echo "<tr><td>menu</td><td> : ".$menu."</td></tr>";
-  echo "<tr><td>onlyshow</td><td> : ".$onlyshow."</td></tr>";
+//  echo "<tr><td>callbackurl</td><td> : ".$callbackurl."</td></tr>";
+//  echo "<tr><td>menu</td><td> : ".$menu."</td></tr>";
+//  echo "<tr><td>onlyshow</td><td> : ".$onlyshow."</td></tr>";
   echo "<tr><td>anztables</td><td> : ".$anztables."</td></tr>";
-  echo "<tr><td>strtables</td><td> : ".$strvontables."</td></tr>";
-  echo "<tr><td>strindex</td><td> : ".$strvonindex."</td></tr>";
+  echo "<tr><td>strvontables</td><td> : ".$strvontables."</td></tr>";
+  echo "<tr><td>strvonindex</td><td> : ".$strvonindex."</td></tr>";
+  echo "<tr><td>strvonbez</td><td> : ".$strvonbez."</td></tr>";
+  echo "<tr><td>strvondbtyp</td><td> : ".$strvondbtyp."</td></tr>";
+  echo "<tr><td>strvondbname</td><td> : ".$strvondbname."</td></tr>";
+  echo "<tr><td>strvondbuser</td><td> : ".$strvondbuser."</td></tr>";
+  echo "<tr><td>strvondbpassword</td><td> : ".$strvondbpassword."</td></tr>";
+  echo "<tr><td>strnchtables</td><td> : ".$strnchtables."</td></tr>";
+  echo "<tr><td>strnchindex</td><td> : ".$strnchindex."</td></tr>";
+  echo "<tr><td>strnchbez</td><td> : ".$strnchbez."</td></tr>";
   echo "<tr><td>strnchdbtyp</td><td> : ".$strnchdbtyp."</td></tr>";
+  echo "<tr><td>strnchdbname</td><td> : ".$strnchdbname."</td></tr>";
   echo "</table>";
   echo "</div>";
 
+  $arrcolsel=array();
+  for($tablecount = 0; $tablecount < $anztables; $tablecount++) {
+    $column=getdbcolumn($arrvondbtyp[$tablecount],$arrvondbname[$tablecount],$arrvontables[$tablecount]);   
+    array_push($arrcolsel,$column);
+  }
+  
   echo "<form class='form-horizontal' method='post' action='".$website."'>";
   echo "<input type='hidden' name='callbackurl' value='".$callbackurl."' />";
   echo "<input type='hidden' name='onlyshow' value='".$onlyshow."' />";
   echo "<input type='hidden' name='action' value='einspielen' />";
+  echo "<input type='hidden' name='anztables' value=".$anztables." />";
+  echo "<input type='hidden' name='strnchdbtyp' value=".json_encode($arrnchdbtyp)." />";
+  echo "<input type='hidden' name='strnchdbname' value=".json_encode($arrnchdbname)." />";
+  echo "<input type='hidden' name='strnchtables' value=".json_encode($arrnchtables)." />";
+  echo "<input type='hidden' name='strnchindex' value=".json_encode($arrnchindex)." />";
   echo "<input type='submit' value='Daten einspielen' />";
+  
+  echo "<table class='table table-hover'>";
+  echo "<tr><th>Table</th><th>Index</th><th>Bezeichnung</th><th>NOSYNC</th></tr>";
+  //$qryval = "SELECT ".$colsel." FROM ".$dbtable." WHERE fldtimestamp>'".$timestamp."' AND flddbsyncnr=".$dbsyncnr." AND flddbsyncstatus='SYNC'";
+  echo "<br>";
+  $arranzds = array();
+  $arridxds = array();
+  for($tablecount = 0; $tablecount < $anztables; $tablecount++) {
+    $dbvonopen=dbopentyp($arrvondbtyp[$tablecount],$arrvondbname[$tablecount],$arrvondbuser[$tablecount],$arrvondbpassword[$tablecount]);
+    $qryval = "SELECT ".$arrcolsel[$tablecount]." FROM ".$arrvontables[$tablecount]." WHERE flddbsyncstatus='SYNC'";
+    $resval = dbquerytyp($arrvondbtyp[$tablecount],$dbvonopen,$qryval);
+	 $datcnt=0;
+    while ($linval = dbfetchtyp($arrvondbtyp[$tablecount],$resval)) {
+	   $datcnt=$datcnt+1;
+      echo "<tr>";
+      echo "<td>".$arrvontables[$tablecount]."</td>";
+      echo "<td>".$linval[$arrvonindex[$tablecount]]."</td>";
+      echo "<td>".$linval[$arrvonbez[$tablecount]]."</td>";
+      echo "<td><a href='nosync.php?menu=".$menu."&dbindex=".$linval[$arrvonindex[$tablecount]]."' class='btn btn-primary btn-sm active' role='button'>NOSYNC</a></td> ";
+      echo "</tr>";
+      array_push($arridxds,$linval[$arrvonindex[$tablecount]]);
+	 }  
+	 array_push($arranzds,$datcnt);
+  }	
+  echo "</table>";  
+  echo "<input type='hidden' name='stranzds' value=".json_encode($arranzds)." />";
+  echo "<input type='hidden' name='stridxds' value=".json_encode($arridxds)." />";
+  
   echo "</form>";
   
   

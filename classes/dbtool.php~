@@ -173,9 +173,7 @@ function getdbcolumn($dbtyp,$dbname,$dbtable) {
 	  return $col;
 	break;
     case 'MYSQL';
-      $col="*";
       //$query="SHOW COLUMNS FROM ".$dbtable;
-      return $col;
 	break;  
     default;
         echo 'Unbekannter dbtyp '.$dbtyp;

@@ -6,6 +6,7 @@ include("../config.php");
 bootstraphead();
 bootstrapbegin("Hilfe");
 $menu=$_GET['menu'];
+$url=$_GET['url'];
 $pagename=$_GET['pagename'];
 $action=$_GET['action'];
 if ($action=="back") {
@@ -37,11 +38,15 @@ if ($row = $results->fetchArray() ) {
 echo "<br>";
 if ($typ<>"print") {
   echo "<a href='../index.php' class='btn btn-primary btn-sm active' role='button'>Menü</a> "; 
-  echo "<a href='showtab.php?menu=".$menu."' class='btn btn-primary btn-sm active' role='button'>zur Anwendung</a> "; 
+  if ($url<>"") {
+    echo "<a href='".$url."' class='btn btn-primary btn-sm active' role='button'>zur Anwendung</a> "; 
+  } else {
+    echo "<a href='showtab.php?menu=".$menu."' class='btn btn-primary btn-sm active' role='button'>zur Anwendung</a> "; 
+  }
   echo "<a href='help.php?menu=".$menu."&pagename=helpindex' class='btn btn-primary btn-sm active' role='button'>Index</a> "; 
   echo "<a href='help.php?menu=".$menu."&pageno=".$pageno."&action=back' class='btn btn-primary btn-sm active' role='button'>zurück</a> "; 
   echo "<a href='help.php?menu=".$menu."&pageno=".$pageno."&action=forward' class='btn btn-primary btn-sm active' role='button'>vor</a> "; 
-  echo "<a href='html2pdf.php' target='_blank' class='btn btn-primary btn-sm active' role='button'>Export to PDF</a> "; 
+  //echo "<a href='html2pdf.php' target='_blank' class='btn btn-primary btn-sm active' role='button'>Export to PDF</a> "; 
 }
 echo "<p class='text-justify'>";
 if ($lok) { 

@@ -6,9 +6,11 @@ Installing
 ==========
 
 - copy the files in the PhpMySync folder on your server.  
+- rename and config the file 'config-sample.php' into 'config.php'.
 
 How it works
 ==========
 
 description follows later...
+For Help you can start the program and call the menu 'About' and afterward call the function 'Hilfe'
 
