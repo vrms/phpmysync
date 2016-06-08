@@ -38,6 +38,15 @@ bootstrapbegin("Datenaustausch");
 //  for($tablecount = 1; $tablecount < $anztables; $tablecount++) {
 //  	 $stridxds=$stridxds.",".$arridxds[$tablecount];
 //  }
+  $arrdaten=json_decode($_POST["strdaten"]);
+  $strdaten=$arrdaten[0];
+  for($colcnt = 1; $colcnt < $arrdaten; $colcnt++) {
+  	 $strdaten=$strdaten.",".$arrdaten[$colcnt];
+  }
+  echo $strdaten."=daten<br>";
+  $arrcolsel=json_decode($_POST["strcolsel"]);
+  $arrnchdbuser=json_decode($_POST["strdbuser"]);
+  $arrnchdbpassword=json_decode($_POST["strdbpassword"]);
   
   echo "<a href='".$callbackurl."'  class='btn btn-primary btn-sm active' role='button'>Zurück</a> ";
   echo "<div class='alert alert-success'>";
@@ -59,27 +68,47 @@ bootstrapbegin("Datenaustausch");
   echo "</div>";
 
   $idxcnt=0;
+  $idxcol=0;
   for($tablecount = 0; $tablecount < $anztables; $tablecount++) {
-    //$dbnchopen=dbopentyp($arrvondbtyp[$tablecount],$arrvondbname[$tablecount],$arrvondbuser[$tablecount],$arrvondbpassword[$tablecount]);
-  	
-    //echo $arrnchdbtyp[$tablecount]."<br>";    
-    for( $i=1; $i <= $arranzds[$tablecount]; $i++ ) {
-      //$qryval = "SELECT * FROM ".$dbtable." WHERE ".$fldindex."=".$index;
-      $qryval = "SELECT * FROM ".$arrnchtables[$tablecount]." WHERE ".$arrnchindex[$tablecount]."=".$arridxds[$idxcnt];
-	   echo $qryval."<br>";
-      /*
-      $results = $db->query($qryval);
-      if ($linval = $results->fetchArray()) {
-        $sql="upd<br>";	
-        //$sql=$_POST['updsql'.$i];
-      } else {
-        $sql="ins<br>";	
-        //$sql=$_POST['inssql'.$i];
-      }	
-      //$sql=str_replace("#","'",$sql);
-      echo $sql."<br>";
-      */
-    	$idxcnt=$idxcnt+1;
+    $dbnchopen=dbopentyp($arrnchdbtyp[$tablecount],$arrnchdbname[$tablecount],$arrnchdbuser[$tablecount],$arrnchdbpassword[$tablecount]);
+    $nchcolumn=getdbcolumn($arrnchdbtyp[$tablecount],$arrnchdbname[$tablecount],$arrnchtables[$tablecount],$arrnchdbuser[$tablecount],$arrnchdbpassword[$tablecount]);   
+    echo "nch:".$nchcolumn."<br>";
+  	 //echo "von:".$arrcolsel[$tablecount]."<br>";
+    //echo $arrnchdbtyp[$tablecount]."<br>";   
+    if ($nchcolumn==$arrcolsel[$tablecount]) { 
+      for( $i=1; $i <= $arranzds[$tablecount]; $i++ ) {
+        //$qryval = "SELECT * FROM ".$dbtable." WHERE ".$fldindex."=".$index;
+        $arrcolumn = explode(",", $arrcolsel[$tablecount]);
+        $qryval = "SELECT ".$arrcolsel[$tablecount]." FROM ".$arrnchtables[$tablecount]." WHERE ".$arrnchindex[$tablecount]."=".$arridxds[$idxcnt];
+	     echo $qryval."<br>";
+        $resval = dbquerytyp($arrnchdbtyp[$tablecount],$dbnchopen,$qryval);
+      
+        if ($linval = dbfetchtyp($arrnchdbtyp[$tablecount],$resval)) {
+          $upd=$arrcolumn[0]."=".$arrdaten[$idxcol];
+          for( $colidx=1; $colidx <count($arrcolumn); $colidx++) {
+          	$idxcol=$idxcol+1;
+          	$upd=$upd.", ".$arrcolumn[$colidx]."=".$arrdaten[$idxcol];
+          }	
+          $sql="UPDATE table SET ".$upd." WHERE ".$arrnchindex[$tablecount]."=".$arridxds[$idxcnt];
+          //$sql=$_POST['updsql'.$i];
+        } else {
+        	 $ins="";
+          for( $colidx=1; $colidx <count($arrcolumn); $colidx++) {
+          	$idxcol=$idxcol+1;
+          	$ins=$ins.",".$arrdaten[$idxcol];
+          }	
+          $sql="INSERT INTO ".$arrnchtables[$tablecount]." (".$arrcolsel[$tablecount].") VALUES(".$ins.")";	
+        }
+        echo $sql."<br>";
+     	  $idxcnt=$idxcnt+1;
+      
+      }
+	} else {
+    $arrcolumn = explode(",", $arrcolsel[$tablecount]);
+    $idxcol=$idxcol+count($arrcolumn);
+    echo $idxcol."=idxcol<br>";    
+    echo "nch:".$nchcolumn."<br>";
+  	 echo "von:".$arrcolsel[$tablecount]."<br>";
 	}
   }
   

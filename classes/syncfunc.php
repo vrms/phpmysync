@@ -18,7 +18,9 @@ function showauswahl($menu,$database,$onlyshow) {
   $arrvondbname = array();
   $arrnchdbname = array();
   $arrvondbuser = array();
+  $arrnchdbuser = array();
   $arrvondbpassword = array();
+  $arrnchdbpassword = array();
   while ($line = $results->fetchArray()) {
     $aktiv=$line['fldaktiv'];
     if ($aktiv=='J') {
@@ -44,6 +46,8 @@ function showauswahl($menu,$database,$onlyshow) {
       array_push($arrnchwebsite,$lindb['fldpfad']);
       array_push($arrnchdbtyp,$lindb['flddbtyp']);
       array_push($arrnchdbname,$lindb['fldbez']);
+      array_push($arrnchdbuser,$lindb['flddbuser']);
+      array_push($arrnchdbpassword,$lindb['flddbpassword']);
     }
   }  
 
@@ -380,12 +384,24 @@ function auslesen($menu,$onlyshow) {
   for($tablecount = 1; $tablecount < $anztables; $tablecount++) {
   	 $strvondbuser=$strvondbuser.",".$arrvondbuser[$tablecount];
   }
+  $arrnchdbuser=json_decode($_POST["strnchdbuser"]);
+  $strnchdbuser=$arrnchdbuser[0];
+  for($tablecount = 1; $tablecount < $anztables; $tablecount++) {
+  	 $strnchdbuser=$strnchdbuser.",".$arrnchdbuser[$tablecount];
+  }
   $arrvondbpassword=json_decode($_POST["strvondbpassword"]);
   $strvondbpassword=$arrvondbpassword[0];
   for($tablecount = 1; $tablecount < $anztables; $tablecount++) {
   	 $strvondbpassword=$strvondbpassword.",".$arrvondbpassword[$tablecount];
   }
+  $arrnchdbpassword=json_decode($_POST["strnchdbpassword"]);
+  $strnchdbpassword=$arrnchdbpassword[0];
+  for($tablecount = 1; $tablecount < $anztables; $tablecount++) {
+  	 $strnchdbpassword=$strnchdbpassword.",".$arrnchdbpassword[$tablecount];
+  }
   
+//  $strdatenstruc="";
+//  $strdatenval="";
 
   echo "<div class='alert alert-info'>";
   echo "<table>";
@@ -407,14 +423,22 @@ function auslesen($menu,$onlyshow) {
   echo "<tr><td>strnchbez</td><td> : ".$strnchbez."</td></tr>";
   echo "<tr><td>strnchdbtyp</td><td> : ".$strnchdbtyp."</td></tr>";
   echo "<tr><td>strnchdbname</td><td> : ".$strnchdbname."</td></tr>";
-  echo "</table>";
-  echo "</div>";
+  echo "<tr><td>strnchdbuser</td><td> : ".$strnchdbuser."</td></tr>";
+  echo "<tr><td>strnchdbpassword</td><td> : ".$strnchdbpassword."</td></tr>";
+//  for($tablecount = 0; $tablecount < $anztables; $tablecount++) {
+//    echo "<tr><td>strdatenstruc</td><td> : ".$strdatenstruc."</td></tr>";
+//    echo "<tr><td>strdatenval</td><td> : ".$strdatenval."</td></tr>";
+//  }
 
   $arrcolsel=array();
   for($tablecount = 0; $tablecount < $anztables; $tablecount++) {
-    $column=getdbcolumn($arrvondbtyp[$tablecount],$arrvondbname[$tablecount],$arrvontables[$tablecount]);   
+    $column=getdbcolumn($arrvondbtyp[$tablecount],$arrvondbname[$tablecount],$arrvontables[$tablecount],$arrvondbuser[$tablecount],$arrvondbpassword[$tablecount]);   
     array_push($arrcolsel,$column);
+    //echo "<tr><td>strdatenstruc</td><td> : ".$column."</td></tr>";
   }
+
+  echo "</table>";
+  echo "</div>";
   
   echo "<form class='form-horizontal' method='post' action='".$website."'>";
   echo "<input type='hidden' name='callbackurl' value='".$callbackurl."' />";
@@ -423,8 +447,11 @@ function auslesen($menu,$onlyshow) {
   echo "<input type='hidden' name='anztables' value=".$anztables." />";
   echo "<input type='hidden' name='strnchdbtyp' value=".json_encode($arrnchdbtyp)." />";
   echo "<input type='hidden' name='strnchdbname' value=".json_encode($arrnchdbname)." />";
+  echo "<input type='hidden' name='strnchdbuser' value=".json_encode($arrnchdbuser)." />";
+  echo "<input type='hidden' name='strnchdbpassword' value=".json_encode($arrnchdbpassword)." />";
   echo "<input type='hidden' name='strnchtables' value=".json_encode($arrnchtables)." />";
   echo "<input type='hidden' name='strnchindex' value=".json_encode($arrnchindex)." />";
+  echo "<input type='hidden' name='strcolsel' value=".json_encode($arrcolsel)." />";
   echo "<input type='submit' value='Daten einspielen' />";
   
   echo "<table class='table table-hover'>";
@@ -433,6 +460,7 @@ function auslesen($menu,$onlyshow) {
   echo "<br>";
   $arranzds = array();
   $arridxds = array();
+  $arrdaten = array();
   for($tablecount = 0; $tablecount < $anztables; $tablecount++) {
     $dbvonopen=dbopentyp($arrvondbtyp[$tablecount],$arrvondbname[$tablecount],$arrvondbuser[$tablecount],$arrvondbpassword[$tablecount]);
     $qryval = "SELECT ".$arrcolsel[$tablecount]." FROM ".$arrvontables[$tablecount]." WHERE flddbsyncstatus='SYNC'";
@@ -440,6 +468,14 @@ function auslesen($menu,$onlyshow) {
 	 $datcnt=0;
     while ($linval = dbfetchtyp($arrvondbtyp[$tablecount],$resval)) {
 	   $datcnt=$datcnt+1;
+	   $arrcolumn = explode(",", $arrcolsel[$tablecount]);
+      for($colcnt = 0; $colcnt < count($arrcolumn); $colcnt++) {
+        $inh="'".$linval[$arrcolumn[$colcnt]]."'";	
+        
+        echo $arrvontables[$tablecount].",".$arrcolumn[$colcnt].",".$inh."#<br>";
+        array_push($arrdaten,$inh);
+        //array_push($arrdaten,$arrcolumn[$colcnt]);
+      }
       echo "<tr>";
       echo "<td>".$arrvontables[$tablecount]."</td>";
       echo "<td>".$linval[$arrvonindex[$tablecount]]."</td>";
@@ -451,8 +487,11 @@ function auslesen($menu,$onlyshow) {
 	 array_push($arranzds,$datcnt);
   }	
   echo "</table>";  
+  $strdaten=json_encode($arrdaten);
+  echo $strdaten."=strdaten<br>";
   echo "<input type='hidden' name='stranzds' value=".json_encode($arranzds)." />";
   echo "<input type='hidden' name='stridxds' value=".json_encode($arridxds)." />";
+  echo "<input type='hidden' name='strdaten' value=".$strdaten." />";
   
   echo "</form>";
   

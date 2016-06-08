@@ -151,7 +151,7 @@ function dbexecutetyp($dbtyp,$db,$sql) {
   }
 }
 
-function getdbcolumn($dbtyp,$dbname,$dbtable) {
+function getdbcolumn($dbtyp,$dbname,$dbtable,$dbuser,$dbpassword) {
   switch($dbtyp)
   {
     case 'SQLITE3';
@@ -173,8 +173,21 @@ function getdbcolumn($dbtyp,$dbname,$dbtable) {
 	  return $col;
 	break;
     case 'MYSQL';
-      $col="*";
-      //$query="SHOW COLUMNS FROM ".$dbtable;
+      $dbopen=dbopentyp($dbtyp,$dbname,$dbuser,$dbpassword);
+      //$col="*";
+      $col="";
+      //$query="describe ".$dbtable;
+      $query="SHOW COLUMNS FROM ".$dbtable;
+      $results = dbquerytyp($dbtyp,$dbopen,$query);
+      while ($row = dbfetchtyp($dbtyp,$results)) {
+        $colstr=$row['Field'];
+        //$lincnt = $lincnt + 1;
+        if ($col=="") {
+          $col=$colstr;
+        } else {	
+          $col=$col.",".$colstr;
+        }    
+      }
       return $col;
 	break;  
     default;
