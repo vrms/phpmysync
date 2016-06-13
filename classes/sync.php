@@ -17,15 +17,10 @@ switch ( $status ) {
   case 'sync':
     $typ=$_POST['typ'];
     if ($typ=="local") { 	
-      auslesen($menu,$onlyshow);
+      auslesen($menu,$database,$onlyshow);
     } else {
-    	fernabfrage($menu,$onlyshow);
+      fernabfrage($menu,$onlyshow);
     }
-    //if ($typ=="local") { 	
-    //  showsynclocal($menu,$database,$pfad,$onlyshow);
-    //} else {
-    //  showsyncremote($menu,$database,$pfad);
-    //}    
   break;
   case 'senden':
     $datcnt=$_POST['datcnt'];
@@ -34,10 +29,10 @@ switch ( $status ) {
     syncsenden($database,$datcnt,$dbvontyp,$dbtable);
   break;
   case 'einspielen':
-    einspielen($onlyshow);
+    einspielen($menu,$onlyshow);
   break;
   case 'fertig':
-    abschliessen($onlyshow);
+    abschliessen($onlyshow,$database);
   break;
   default:
     showauswahl($menu,$database,$onlyshow);
