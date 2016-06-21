@@ -1,6 +1,6 @@
 <?php
 include("bootstrapfunc.php");
-include("stdlib/dbtool.php");
+include("dbtool.php");
 include("gettablestrucfunc.php");
 bootstraphead();
 bootstrapbegin("Get Tables<br>");

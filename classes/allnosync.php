@@ -1,6 +1,6 @@
 <?php
 include("bootstrapfunc.php");
-include("dbtool.php");
+include("stdlib/dbtool.php");
 bootstraphead();
 bootstrapbegin("Datenaustausch - Allnosync");
 include("../config.php");

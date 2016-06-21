@@ -138,7 +138,7 @@ for($tablecount = 0; $tablecount < $anztables; $tablecount++) {
       }
       echo "<tr>";
       echo "<td>".$arrnchtables[$tablecount]."</td>";
-      echo "<td>".$linval[$arrnchindex[$tablecount]]."</td>";
+      echo "<td>".$linval[$arrnchindex[$tablecount]].$arrnchindex[$tablecount]."</td>";
       echo "<td>".$linval[$arrnchbez[$tablecount]]."</td>";
       echo "<td><a href='nosync.php?menu=".$menu."&dbindex=".$linval[$arrnchindex[$tablecount]]."' class='btn btn-primary btn-sm active' role='button'>NOSYNC</a></td> ";
       echo "</tr>";

@@ -1,6 +1,6 @@
 <?php
 include("bootstrapfunc.php");
-include("dbtool.php");
+include("stdlib/dbtool.php");
 include("syncfunc.php");
 include("../config.php");
 $menu=$_GET['menu'];
@@ -13,6 +13,7 @@ bootstraphead();
 bootstrapbegin("Datenaustausch");
 echo "<a href='showtab.php?menu=".$menu."'  class='btn btn-primary btn-sm active' role='button'>Zurück</a> ";
 $status=$_POST['status'];
+//echo $status."=status<br>";
 switch ( $status ) {
   case 'sync':
     $typ=$_POST['typ'];

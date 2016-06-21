@@ -1,5 +1,5 @@
 <?php
-include("classes/dbtool.php");
+include("classes/stdlib/dbtool.php");
 include("config.php");
 
 echo "<html>";

@@ -1,6 +1,6 @@
 <?php
 include("bootstrapfunc.php");
-include("dbtool.php");
+include("stdlib/dbtool.php");
 include("nosyncfunc.php");
 $menu=$_GET['menu'];
 $dbindex=$_GET['dbindex'];

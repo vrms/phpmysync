@@ -39,7 +39,7 @@ if (!file_exists($dirdata)) {
     include("classes/install.php");
   } else {
     include("classes/checkupgrade.php");
-    //check_version();
+    check_version();
     $db = dbopen('','data/'.$database);
     $parentid=$_GET['id'];
     if ($parentid=="") {

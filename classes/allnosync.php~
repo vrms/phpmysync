@@ -16,6 +16,7 @@ $database=$_POST['database'];
 $dbuser=$_POST['dbuser'];
 $dbpassword=$_POST['dbpassword'];
 $timestamp=$_POST['timestamp'];
+$fldindex=$_POST['fldindex'];
 //$db = new SQLite3($database);
 echo $dbtyp."<br>";
 echo $database."<br>";
@@ -40,7 +41,7 @@ echo "Timestamp:".$timestamp."<br>";;
   echo $qryval."<br>";
   $results = dbquerytyp($dbtyp,$db,$qryval);
   while ($linval = dbfetchtyp($dbtyp,$results)) {
-    $qryupd="UPDATE ".$dbtable." SET flddbsyncstatus='NOSYNC' WHERE fldindex=".$linval['fldIndex'];
+    $qryupd="UPDATE ".$dbtable." SET flddbsyncstatus='NOSYNC' WHERE ".$fldindex."=".$linval[$fldindex];
     echo $qryupd."<br>";
     dbexecutetyp($dbtyp,$db,$qryupd);
   }

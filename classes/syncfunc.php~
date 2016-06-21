@@ -77,10 +77,16 @@ function showauswahl($menu,$database,$onlyshow) {
     if ($onlyshow=="N") {
       $value="Sync starten";
     }
+	$synctyp='remote';
     echo "<form class='form-horizontal' method='post' action='sync.php?showsync=1&menu=".$menu."&onlyshow=".$onlyshow."'>";
     echo "<select name='typ' size='1'>";
-    echo "<option style='background-color:#c0c0c0;' selected>local</option>";
-    echo "<option style='background-color:#c0c0c0;' >remote</option>";
+	if ($synctyp=="local") {
+      echo "<option style='background-color:#c0c0c0;' selected>local</option>";
+      echo "<option style='background-color:#c0c0c0;' >remote</option>";
+	} else {
+      echo "<option style='background-color:#c0c0c0;' >local</option>";
+      echo "<option style='background-color:#c0c0c0;' selected>remote</option>";
+	}
     echo "</select>";
     echo "<input type='hidden' name='status' value='sync' />";
     echo "<input type='hidden' name='anztables' value=".$anztables." />";
@@ -527,6 +533,10 @@ function fernabfrage($menu,$onlyshow) {
 
   $anztables=$_POST["anztables"];
   $arrvontables=json_decode($_POST["strvontables"]);
+  $strvontables=$arrvontables[0];
+  for($tablecount = 1; $tablecount < $anztables; $tablecount++) {
+  	 $strvontables=$strvontables.",".$arrvontables[$tablecount];
+  }
   $arrnchtables=json_decode($_POST["strnchtables"]);
   $strnchtables=$arrnchtables[0];
   for($tablecount = 1; $tablecount < $anztables; $tablecount++) {
@@ -600,6 +610,7 @@ function fernabfrage($menu,$onlyshow) {
   }
 
   
+  $arrnchwebsite=json_decode($_POST["strnchwebsite"]);
   //$website="http://localhost:8080/own/phpmysync/classes/syncauslesen.php?menu=".$menu;
   $website=$arrnchwebsite[0]."classes/syncauslesen.php?menu=".$menu;
   $aktpfad=$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'];  
@@ -619,6 +630,7 @@ function fernabfrage($menu,$onlyshow) {
   echo "<tr><td>strnchdbname</td><td> : ".$strnchdbname."</td></tr>";
   echo "<tr><td>strnchdbuser</td><td> : ".$strnchdbuser."</td></tr>";
   echo "<tr><td>strnchdbpassword</td><td> : ".$strnchdbpassword."</td></tr>";
+  echo "<tr><td>strvontables</td><td> : ".$strvontables."</td></tr>";
   echo "<tr><td>strvondbtyp</td><td> : ".$strvondbtyp."</td></tr>";
   echo "<tr><td>strvondbname</td><td> : ".$strvondbname."</td></tr>";
   echo "<tr><td>strvondbuser</td><td> : ".$strvondbuser."</td></tr>";
@@ -646,6 +658,7 @@ function fernabfrage($menu,$onlyshow) {
   echo "<input type='hidden' name='strvondbpassword' value='".json_encode($arrvondbpassword)."' />";
   echo "<input type='hidden' name='strdbsyncnr' value='".json_encode($arrdbsyncnr)."' />";
   echo "<input type='hidden' name='strcolsel' value='".json_encode($arrcolsel)."' />";
+  echo "<input type='hidden' name='strnchwebsite' value='".json_encode($arrnchwebsite)."' />";
   echo "<input type='hidden' name='action' value='auslesen' />";
   echo "<input type='submit' value='Daten auslesen' />";
   echo "</form>";
@@ -655,15 +668,18 @@ function fernabfrage($menu,$onlyshow) {
 function einspielen($menu,$onlyshow) {
   $anztables=$_POST["anztables"];
   $arrvontables=json_decode($_POST["strvontables"]);
+  $arrnchtables=json_decode($_POST["strnchtables"]);
   $arrvonindex=json_decode($_POST["strvonindex"]);
   $arrvondbtyp=json_decode($_POST["strvondbtyp"]);
   $arrvondbname=json_decode($_POST["strvondbname"]);
   $arrvondbuser=json_decode($_POST["strvondbuser"]);
   $arrvondbpassword=json_decode($_POST["strvondbpassword"]);
   $arrtblstatus=json_decode($_POST["strtblstatus"]);
+  $arrdbsyncnr=json_decode($_POST["strdbsyncnr"]);
   $arranzds=json_decode($_POST["stranzds"]);
   $arridxds=json_decode($_POST["stridxds"]);
   $arrdaten=json_decode($_POST["strdaten"]);
+  $arrnchwebsite=json_decode($_POST["strnchwebsite"]);
   echo "<div class='alert alert-info'>";
   echo "einspielen<br>";
   echo "<table>";
@@ -692,7 +708,14 @@ function einspielen($menu,$onlyshow) {
           }
 		  $sql="UPDATE ".$arrvontables[$tablecount]." SET ".$upd." WHERE ".$arrvonindex[$tablecount]."=".$arridxds[$idxcnt];;
 		} else {
-		  $sql="INSERT (".$column.") VALUES";
+        for( $colidx=0; $colidx <count($arrcolumn); $colidx++) {
+        	 if ($colidx==0) {
+            $ins="'".str_replace("#"," ",$arrdaten[$colidx])."'";
+        	 } else {
+            $ins=$ins.", '".str_replace("#"," ",$arrdaten[$colidx])."'";
+          }  
+        }
+		  $sql="INSERT (".$column.") VALUES(".$ins.")";
 		}
 		echo $sql."<br>";
         dbexecutetyp($arrvondbtyp[$tablecount],$dbvonopen,$sql); 
@@ -702,13 +725,17 @@ function einspielen($menu,$onlyshow) {
 	}
   }
   echo "</div>";
-  $website="http://localhost:8080/own/phpmysync/classes/syncfertig.php?menu=".$menu;
+  //$website="http://localhost:8080/own/phpmysync/classes/syncfertig.php?menu=".$menu;
+  $website=$arrnchwebsite[0]."syncfertig.php?menu=".$menu;
   $aktpfad=$_SERVER['HTTP_HOST'].$_SERVER['SCRIPT_NAME'];  
   $callbackurl="http://".$aktpfad."?menu=".$menu;
   
   $onlyshow="";
   echo "<form class='form-horizontal' method='post' action='".$website."'>";
   echo "<input type='hidden' name='callbackurl' value='".$callbackurl."' />";
+  echo "<input type='hidden' name='strnchtables' value='".json_encode($arrnchtables)."' />";
+  echo "<input type='hidden' name='strtblstatus' value='".json_encode($arrtblstatus)."' />";
+  echo "<input type='hidden' name='strdbsyncnr' value='".json_encode($arrdbsyncnr)."' />";
   echo "<input type='submit' value='Daten abschließen' />";
   echo "</form>";
   

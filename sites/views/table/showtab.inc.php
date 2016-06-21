@@ -97,7 +97,7 @@ $listarray = array ( array ( 'label' => 'Von Datenbank',
 
 $pararray = array ( 'headline' => 'Tables',
                     'dbtable' => 'tbltable',
-                    'orderby' => '',
+                    'orderby' => 'fldvontblname',
                     'strwhere' => '',
                     'fldindex' => 'fldindex');
 ?>

@@ -1,2 +1,0 @@
-versnrphpmysync='0.005';
-versdatphpmysync='02.03.2016';

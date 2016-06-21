@@ -1,6 +1,6 @@
 <?php
 include("bootstrapfunc.php");
-include("stdlib/dbtool.php");
+include("dbtool.php");
 include("updatefunc.php");
 $menu=$_GET['menu'];
 $menugrp=$_GET['menugrp'];

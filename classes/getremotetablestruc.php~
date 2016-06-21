@@ -1,5 +1,5 @@
 <?php
-include("stdlib/dbtool.php");
+include("dbtool.php");
 $pfad=$_GET['pfad'];
 $database=$_GET['database'];
 $bemerk=$_GET['bemerk'];

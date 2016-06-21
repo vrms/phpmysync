@@ -1,7 +1,7 @@
 <?php
 session_start();
 include("bootstrapfunc.php");
-include("stdlib/dbtool.php");
+include("dbtool.php");
 include("showtabfunc.php");
 $menu=$_GET['menu'];
 $filter=$_GET['filter'];

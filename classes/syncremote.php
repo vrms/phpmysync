@@ -1,6 +1,6 @@
 <?php
 include("bootstrapfunc.php");
-include("dbtool.php");
+include("stdlib/dbtool.php");
 $action=$_POST['action'];
 $onlyshow=$_POST['onlyshow'];
 $callbackurl=$_POST['callbackurl'];

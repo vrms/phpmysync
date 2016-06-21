@@ -8,6 +8,6 @@ bootstraphead();
 bootstrapbegin("Datenaustausch");
 echo "<a href='showtab.php?menu=".$menu."'  class='btn btn-primary btn-sm active' role='button'>Zurück</a> ";
 //echo $dbindex."=dbindex<br>";
-nosyncfunc($dbindex)
+nosyncfunc($dbindex);
 bootstrapend();
 ?>
