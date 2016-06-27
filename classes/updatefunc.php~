@@ -205,6 +205,9 @@ function updateinput($pararray,$listarray,$idwert,$menu,$menugrp) {
     echo "<input type='checkbox' name='chkpreis' value='preis' checked> Preis speichern<br>";
   }
   echo "<input type='checkbox' name='chkanzeigen' value='anzeigen'> Speichern anzeigen<br>";
+
+  echo "<input type='checkbox' name='dscopy' value='dscopy'> Kopieren<br><br>";
+  
   echo "<dd><input type='submit' value='Speichern' /></dd>";
   echo "</form>";
 }
@@ -214,8 +217,19 @@ function updatesave($pararray,$listarray,$menu,$show,$chkpreis,$menugrp) {
   $db = dbopen('../','../data/mysqlitesync.db');
 
   $sql="UPDATE ".$pararray['dbtable']." SET ";
+  $strfld="";
+  $strval="";
   foreach ( $listarray as $arrelement ) {
   	 if ($arrelement['fieldsave']<>"NO") {
+      if ($strfld=="") {
+        $strfld=$arrelement['dbfield'];
+        $strval="'".$_POST[$arrelement['dbfield']]."'";
+      } else {
+        if ($arrelement['type']<>"icon") {	
+          $strfld=$strfld.",".$arrelement['dbfield'];
+          $strval=$strval.",'".$_POST[$arrelement['dbfield']]."'";
+        }  
+      }
       switch ( $arrelement['type'] )
       {
         case 'text':
@@ -290,6 +304,17 @@ function updatesave($pararray,$listarray,$menu,$show,$chkpreis,$menugrp) {
       updatepreis($rowid,$show);
     }
   }
+
+    $dscopy=$_POST['dscopy'];
+    //echo $dscopy."=dscopy?<br>";
+    if ($dscopy=="dscopy") {
+      $qrycopy = "INSERT INTO ".$pararray['dbtable']." (".$strfld.") VALUES(".$strval.") ";
+      echo "<div class='alert alert-success'>";
+      echo $qrycopy."<br>";
+      echo "</div>";
+      //mysql_query($qrycopy) or die("Error using mysql_query($qrycopy): ".mysql_error());
+    }
+
   if ($show=="anzeigen") {
     echo "<div class='alert alert-success'>";
     echo $db->lastErrorMsg()."<br>";

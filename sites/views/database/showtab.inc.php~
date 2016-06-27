@@ -42,25 +42,17 @@ $listarray = array ( array ( 'label' => 'Pfad',
                              'seldbfield' => 'fldbez',
                              'seldbindex' => 'fldindex',
                              'dbfield' => 'fldid_select' ),
-                     array ( 'label' => 'Aktiv',
-                             'name' => 'aktiv', 
-                             'width' => 10, 
-                             'type' => 'JN',
-                             'dbfield' => 'fldaktiv' ),
+//                     array ( 'label' => 'Aktiv',
+//                             'name' => 'aktiv', 
+//                             'width' => 10, 
+//                             'type' => 'JN',
+//                             'dbfield' => 'fldaktiv' ),
                      array ( 'label' => 'List',
                              'width' => 5, 
                              'type' => 'icon',
                              'func' => 'tablelist.php?menu=table',
                              'dbfield' => 'icon-book' ));
 
-$filterarray = array ( 
-                              
-                       array ( 'label' => 'aktiv:',
-                               'name' => 'fltaktiv', 
-                               'width' => 10, 
-                               'type' => 'JN',
-                               'sign' => '=',
-                               'dbfield' => 'fldaktiv' ));
 
 $pararray = array ( 'headline' => 'Datenbanken',
                     'dbtable' => 'tbldatabase',

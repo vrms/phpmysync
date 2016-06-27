@@ -14,6 +14,8 @@ if ($update==1) {
   $chkpreis = $_POST['chkpreis'];
   //echo $chkpreis."=chkpreis<br>";
   $show = $_POST['chkanzeigen'];
+  //$dscopy = $_POST['dscopy'];
+  //echo $dscopy."=dscopy<br>";
   updatesave($pararray,$listarray,$menu,$show,$chkpreis,$menugrp);
   if ($show<>"anzeigen") {
     echo "<meta http-equiv='refresh' content='0; URL=showtab.php?menu=".$menu."&menugrp=".$menugrp."'>";  

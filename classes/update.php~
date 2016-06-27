@@ -1,6 +1,6 @@
 <?php
 include("bootstrapfunc.php");
-include("dbtool.php");
+include("stdlib/dbtool.php");
 include("updatefunc.php");
 $menu=$_GET['menu'];
 $menugrp=$_GET['menugrp'];
@@ -14,7 +14,9 @@ if ($update==1) {
   $chkpreis = $_POST['chkpreis'];
   //echo $chkpreis."=chkpreis<br>";
   $show = $_POST['chkanzeigen'];
-  updatesave($pararray,$listarray,$menu,$show,$chkpreis,$menugrp);
+  $dscopy = $_POST['dscopy'];
+  echo $dscopy."=dscopy<br>";
+  updatesave($pararray,$listarray,$menu,$show,$chkpreis,$menugrp,$dscopy);
   if ($show<>"anzeigen") {
     echo "<meta http-equiv='refresh' content='0; URL=showtab.php?menu=".$menu."&menugrp=".$menugrp."'>";  
   } 
