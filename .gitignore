@@ -1,6 +1,6 @@
 data/
-.gitignore~
 git.sh
-git.sh~
 config.php
-config.php~
+
+# all ~ files
+*~
